@@ -1,0 +1,195 @@
+openapi: "3.0.1"
+info:
+  title: API Products
+  version: "1.0"
+paths:
+  /api/carts:
+    post:
+      summary: Create a Cart
+      tags:
+        - Carts
+      responses:
+        "200":
+          description: New cart Created
+          content:
+            aplication/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Cart"
+        "500":
+          description: Error creating cart
+  /api/carts/{cid}:
+    get:
+      summary: Gets a cart by ID
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id of the cart
+      responses:
+        "200":
+          description: Showed cart with id
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Cart"
+        "404":
+          description: Error showing cart
+    delete:
+      summary: Empties the cart
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          require: true
+          description: Cart id.
+      responses:
+        "200":
+          description: Products of cart "cid" are now empty
+          content:
+            aplication/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        "500":
+          description: Error occurred while eliminating the products from the cart`
+  /api/carts/${cid}/products/${pid}:
+    post:
+      summary: Adds a product to the cart
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          require: true
+          description: cart id
+        - name: pid
+          require: true
+          description: product id
+      responses:
+        "200":
+          description: Product added successfully
+          content:
+            aplication/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Cart"
+        "400":
+          description: Error while adding the product
+
+    put:
+      summary: Changes the quantity of a product
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          require: true
+          description: Cart id.
+        - name: pid
+          require: true
+          description: Product id.
+      requestBody:
+        required: true
+        content:
+          aplication/json:
+            schema:
+              $ref: "#/components/requestBodies/updateQuantity"
+      responses:
+        "200":
+          description: Quantity of product with code "pid" updated successfully in cart "cid"
+          content:
+            aplication/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        "400":
+          description: Error occurred updating product quantity
+    delete:
+      summary: Deletes the product from the cart
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          require: true
+          description: Cart id.
+        - name: pid
+          require: true
+          description: Product id.
+      responses:
+        "200":
+          description: Product with code "pid" deleted successfully from cart
+          content:
+            aplication/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        "500":
+          description: Error occurred deleting the product
+  /api/carts/${cid}/purchase:
+    get:
+      summary: Process the products in the cart, and generates the ticket for the end of the process of purchase
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Cart ID
+      responses:
+        "200":
+          description: Thank you for trusting, here's your ticket.
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/Cart"
+        "404":
+          description: Error processing your buy. Check the data you are sending us
+
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        products:
+          type: array
+          description: products in cart
+          items:
+            type: object
+            properties:
+              product:
+                type: string
+                description: ObjectId from that particular product.
+              quantity:
+                type: number
+                description: Quantity of the product
+  requestBodies:
+    updateProducts:
+      description: Actualization of the array.
+      properties:
+        products:
+          type: array
+          description: Array with new products
+          items:
+            type: object
+            properties:
+              product:
+                type: string
+                description: productId
+              quantity:
+                type: number
+                description: quantity of the product
+      example:
+        products:
+          [
+            { productId: 64401ad41a6077efffc3d26e, quantity: 8 },
+            { productId: 64401b38b1241db962c7717c, quantity: 2 },
+            { productId: 64401c2bb1241db962c7717e, quantity: 68 },
+          ]
+    updateQuantity:
+      description: Update one product
+      properties:
+        quantity:
+          type: number
+          description: product quantity
+      example:
+        quantity: 33

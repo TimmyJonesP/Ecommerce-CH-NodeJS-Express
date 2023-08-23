@@ -11,7 +11,7 @@ addEventListener("submit", (e) => {
 
 function addToCart(code) {
   const xhr = new XMLHttpRequest();
-  xhr.open("POST", `http://127.0.0.1:8080/api/carts/1/product/${code}`);
+  xhr.open("POST", `http://127.0.0.1:3000/api/carts/1/product/${code}`);
   xhr.send();
   setTimeout(() => location.reload(), 1000);
 }

@@ -6,7 +6,7 @@ export default class ProductsRepository {
   };
 
   getById = async (id) => {
-    return await Products.findOne({ code: { $eq: id } });
+    return await Products.findById(id);
   };
 
   createOne = async (product) => {

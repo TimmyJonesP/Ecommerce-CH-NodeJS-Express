@@ -99,4 +99,13 @@ export default class UserRepository {
       throw new HTTPError("Error deleting inactive users", 500);
     }
   }
+
+  async updateUserWithCart(uid, cid) {
+    const user = await Users.findByIdAndUpdate(
+      uid,
+      { $set: { cartId: cid } },
+      { new: true }
+    );
+    return user;
+  }
 }

@@ -2,18 +2,27 @@ import cartDao from "../DAO/carts.dao.js";
 import productsDao from "../DAO/products.dao.js";
 import HTTPError from "../DAO/repository/errors.repository.js";
 import TicketDao from "../DAO/tickets.dao.js";
+import userDao from "../DAO/users.dao.js";
 import logger from "../utils/logger.utils.js";
 import { v4 as uuidv4 } from "uuid";
 
-const newUUID = uuidv4();
-
 export const createCart = async (req, res, next) => {
   try {
-    const newCart = await cartDao.createCart({});
+    const newCart = await cartDao.createCart();
     logger.info("New cart created", newCart);
-    res.status(200).json(newCart);
+    const updatedUser = await userDao.updateUserWithCart(
+      req.session.user._id,
+      newCart._id
+    );
+
+    res.status(200).json({
+      message: "Cart created and assigned to user.",
+      cartId: newCart._id,
+      user: updatedUser,
+    });
   } catch (error) {
-    logger.error("Error creating the Cart");
+    logger.error("Error creating the Cart", error);
+    res.status(500).json({ message: "An error occurred." });
     next(error);
   }
 };
@@ -44,11 +53,8 @@ export const addProductToCart = async (req, res, next) => {
     const productData = await productsDao.getById(pid);
     const user = req.session.user;
 
-    if (user.role === "premium" && product.owner !== "premium") {
-      return new ErrorRepository(
-        "No tienes permiso para agregar este producto",
-        401
-      );
+    if (user.role === "premium" && productData.owner !== "premium") {
+      return new ErrorRepository("You dont have permission", 401);
     }
 
     await cartDao.updateCart(cartData, productData);
@@ -67,17 +73,13 @@ export const deleteProductFromCart = async (req, res, next) => {
     const pid = req.params.pid;
     const cart = await cartDao.getById(cid);
     if (!cart) {
-      res.status(404).send(`No existe el carrito con id ${cid}`);
+      res.status(404).send(`Doesn't exist cart: ${cid}`);
       return;
     }
     const array = cart.products;
     let index = array.findIndex((e) => e.product._id == pid);
     if (index == -1) {
-      res
-        .status(404)
-        .send(
-          `No existe el producto de codigo ${pid} en el carrito de id ${cid}`
-        );
+      res.status(404).send(`Product id: ${pid} In cart: ${cid} doesn't exists`);
       return;
     }
     array = array.filter((item) => item.product._id != pid);
@@ -86,12 +88,10 @@ export const deleteProductFromCart = async (req, res, next) => {
     logger.info(`Product Eliminated successfully`, cart);
     res
       .status(200)
-      .send(
-        `Product with code: ${pid} eliminated successfully from cart ${cid}`
-      );
+      .send(`Product with code: ${pid} deleted successfully from cart ${cid}`);
   } catch (error) {
     console.log(error);
-    logger.error("Error occurred eliminating the product", error);
+    logger.error("Error occurred deleting the product", error);
     next(error);
   }
 };
@@ -100,38 +100,32 @@ export const updateProductQuantityInCart = async (req, res, next) => {
   try {
     const cid = req.params.cid;
     const pid = req.params.pid;
-    const newQuantity = req.body.quantity; // Se espera que el cuerpo de la solicitud contenga la nueva cantidad
+    const newQuantity = req.body.quantity;
 
     const cart = await cartDao.getById(cid);
     if (!cart) {
-      res.status(404).send(`No existe el carrito con id ${cid}`);
+      res.status(404).send(`No cart with ID: ${cid}`);
       return;
     }
-
     const productIndex = cart.products.findIndex(
-      (item) => item.product._id.toString() === pid
+      (item) => item._id.toString() === pid
     );
 
     if (productIndex === -1) {
-      res
-        .status(404)
-        .send(
-          `No existe el producto de codigo ${pid} en el carrito de id ${cid}`
-        );
+      res.status(404).send(`Cant find product: ${pid} in the cart: ${cid}`);
       return;
     }
 
     cart.products[productIndex].quantity = newQuantity;
 
-    await cartDao.updateCart(cart);
+    await cartDao.updateCart(cart, cart.products);
+    const updatedCart = await cartDao.getById(cart._id);
 
-    logger.info(`Product quantity updated successfully`, cart);
-    res
-      .status(200)
-      .send(
-        `Quantity of product with code ${pid} updated successfully in cart ${cid}`,
-        cart
-      );
+    logger.info(`Product quantity updated successfully`, updatedCart);
+    res.status(200).send({
+      message: `Quantity of product with code ${pid} updated successfully in cart ${cid}`,
+      cart: updatedCart,
+    });
   } catch (error) {
     logger.error("Error occurred updating product quantity", error);
     next(error);
@@ -161,8 +155,8 @@ export const buyCart = async (req, res, next) => {
   try {
     const cid = req.params.cid;
     const cart = await cartDao.getById(cid);
-    const userEmail = req.user.email;
-    const code = newUUID();
+    const userEmail = req.session.user.email;
+    const code = uuidv4();
 
     const purchaseData = await TicketDao.processDataTicket(
       code,

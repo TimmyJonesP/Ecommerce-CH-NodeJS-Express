@@ -86,7 +86,7 @@ export const addProduct = async (req, res, next) => {
 export const updateProduct = async (req, res, next) => {
   try {
     if (
-      user.role === "administrador" ||
+      user.role === "admin" ||
       (user.email !== "premium" && product.owner !== "premium")
     ) {
       return new HTTPError("Unauthorized", 401);
@@ -103,8 +103,8 @@ export const updateProduct = async (req, res, next) => {
     const updatedProduct = {
       name: name || data.name,
       description: description || data.description,
-      price: price || data.price,
-      stock: stock || data.stock,
+      price: parseFloat(price) || data.price,
+      stock: parseInt(stock) || data.stock,
       category: category || data.category,
       thumbnail: thumbnail || data.thumbnail,
     };
