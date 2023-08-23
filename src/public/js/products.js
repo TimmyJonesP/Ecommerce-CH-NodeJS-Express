@@ -17,5 +17,11 @@ function addToCart(code) {
 }
 
 function logout() {
-  window.location.replace("/logout");
+  fetch("/api/login/logout", {
+    method: "POST",
+  })
+    .then(() => {
+      window.location.replace("/api/login");
+    })
+    .catch((error) => console.error(error));
 }

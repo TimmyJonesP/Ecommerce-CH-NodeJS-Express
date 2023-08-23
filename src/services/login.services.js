@@ -99,7 +99,9 @@ export const logOut = async (req, res, next) => {
         logger.error("Error at Logout", error);
         return next(error);
       }
-      res.redirect("/");
+      res
+        .status(200)
+        .json({ message: "Logout successful", redirect: "/api/login" });
     });
   } catch (error) {
     logger.error("Error at Logout (CATCH)", error);

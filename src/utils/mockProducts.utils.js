@@ -16,7 +16,7 @@ export const generateProduct = (role, email) => {
     name: faker.commerce.productName(),
     category: faker.commerce.department(),
     description: faker.commerce.productDescription(),
-    price: faker.commerce.price(),
+    price: faker.commerce.price({ min: 1000, max: 10000 }) / 100,
     stock: faker.string.numeric(2),
     owner: owner,
   };

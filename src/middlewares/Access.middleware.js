@@ -1,7 +1,7 @@
 import HTTPError from "../DAO/repository/errors.repository.js";
 
 export function adminAccess(req, res, next) {
-  req.user.role === "admin" ? next() : next(new HTTPError(401));
+  req.session.user.role === "admin" ? next() : next(new HTTPError(401));
 }
 
 export function privateAccess(req, res, next) {

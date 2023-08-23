@@ -59,13 +59,20 @@ export const getOneProduct = async (req, res, next) => {
 
 export const addProduct = async (req, res, next) => {
   try {
-    if (
-      req.session.user.role !== "premium" &&
-      req.session.user.role !== "admin"
-    ) {
-      throw new HTTPError("Forbiden", 401);
-    }
-    let product = newProductDTO(req.body);
+    const { code, name, category, description, stock, price, thumbnail } =
+      req.body;
+    const owner =
+      req.session.user.role === "admin" ? "admin" : req.session.user.email;
+    const product = new newProductDTO(
+      name,
+      description,
+      price,
+      stock,
+      code,
+      category,
+      thumbnail,
+      owner
+    );
     await productsDao.createOne(product);
     res
       .status(201)
@@ -102,7 +109,7 @@ export const updateProduct = async (req, res, next) => {
       thumbnail: thumbnail || data.thumbnail,
     };
 
-    await productsDao.updateById(pid, updateProduct);
+    await productsDao.updateById(pid, updatedProduct);
     res.send(`Product with id: ${pid} has been actualized`);
   } catch (error) {
     console.log(error);

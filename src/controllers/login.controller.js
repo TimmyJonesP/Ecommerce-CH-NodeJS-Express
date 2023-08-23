@@ -32,7 +32,7 @@ router.post("/reset-password/:email", resetPassword);
 
 router.post("/", localLogin);
 
-router.get("/logout", logOut);
+router.post("/logout", logOut);
 
 router.get(
   "/github",
