@@ -7,6 +7,10 @@ import { __dirname } from "./utils/path.utils.js";
 import cookieParser from "cookie-parser";
 import handlebars from "express-handlebars";
 import router from "./router/index.js";
+import * as path from "path";
+import initializePassport from "./config/passport.config/passport.config.js";
+import passport from "passport";
+import { engine } from "express-handlebars";
 
 const app = express();
 
@@ -14,11 +18,11 @@ app.use(
   session({
     store: MongoStore.create({
       mongoUrl: mongoURL,
-      dbName: "sessions",
       mongoOptions: {
         useNewUrlParser: true,
         useUnifiedTopology: true,
       },
+      collectionName: "sessions",
     }),
     secret: `${mongoSECRET}`,
     resave: true,
@@ -30,9 +34,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
 app.use(cookieParser());
 
-app.engine("handlebars", handlebars.engine());
-app.set("views", __dirname + "/views");
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.engine("handlebars", engine());
 app.set("view engine", "handlebars");
+app.set("views", path.resolve(__dirname + "/views"));
 
 mongoConnect();
 router(app);

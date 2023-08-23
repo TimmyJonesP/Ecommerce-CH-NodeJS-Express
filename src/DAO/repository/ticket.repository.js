@@ -1,5 +1,4 @@
 import Tickets from "../schemas/ticket.schemas.js";
-import Products from "../schemas/products.schemas.js";
 import HTTPError from "./errors.repository.js";
 import logger from "../../utils/logger.utils.js";
 import cartDao from "../carts.dao.js";

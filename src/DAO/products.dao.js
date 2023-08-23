@@ -1,4 +1,4 @@
-import ProductsRepository from "./repository/products.repository";
+import ProductsRepository from "./repository/products.repository.js";
 
 const productsDao = new ProductsRepository();
 

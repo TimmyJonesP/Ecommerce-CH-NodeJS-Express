@@ -1,4 +1,4 @@
-import CartRepository from "./repository/carts.repository";
+import CartRepository from "./repository/carts.repository.js";
 
 const cartDao = new CartRepository();
 

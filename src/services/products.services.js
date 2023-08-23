@@ -1,5 +1,8 @@
 import newProductDTO from "../DAO/DTO/newProduct.dto.js";
 import productsDao from "../DAO/products.dao.js";
+import HTTPError from "../DAO/repository/errors.repository.js";
+import { nodemailer_user } from "../config/mailer.config.js";
+import MailerDao from "../DAO/mailer.dao.js";
 
 export const getAllProducts = async (req, res, next) => {
   try {
@@ -43,6 +46,12 @@ export const getOneProduct = async (req, res, next) => {
 
 export const addProduct = async (req, res, next) => {
   try {
+    if (
+      req.session.user.role !== "premium" &&
+      req.session.user.role !== "admin"
+    ) {
+      throw new HTTPError("Forbiden", 401);
+    }
     let product = newProductDTO(req.body);
     await productsDao.createOne(product);
     res
@@ -56,6 +65,12 @@ export const addProduct = async (req, res, next) => {
 
 export const updateProduct = async (req, res, next) => {
   try {
+    if (
+      user.role === "administrador" ||
+      (user.email !== "premium" && product.owner !== "premium")
+    ) {
+      return new HTTPError("Unauthorized", 401);
+    }
     let pid = req.params.pid;
     let { name, description, price, stock, category, thumbnail } = req.query;
 
@@ -86,15 +101,31 @@ export const deleteProduct = async (req, res, next) => {
   try {
     const pid = req.params.pid;
     const product = await productsDao.getById(pid);
+    const user = req.session.user;
+
+    if (user.role === "premium") {
+      const mailOptions = {
+        from: nodemailer_user,
+        to: user.email,
+        subject: `Deleted product ID: ${pid}`,
+        text: `Your product by name: ${product.name}, has been deleted.`,
+      };
+
+      await MailerDao.sendMail(mailOptions);
+    }
     if (!product) {
       res.status(404).send(`The product with code ${pid} doesn't exists.`);
       return;
     }
-    await productsDao.deleteByID(pid);
-    res.send(`Product wirth code ${pid}, deleted successfully`);
+
+    if (user.role === "administrador" || user.role === product.owner) {
+      await productsDao.deleteByID(pid);
+      res.send(`Product wirth code ${pid}, deleted successfully`);
+    }
   } catch (error) {
     console.log(error);
-    res.status(500).send("An error occurred while deleting the product.");
+    logger.error("Error ocurred deleting the product", error);
+    next(error);
   }
 };
 

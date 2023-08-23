@@ -1,6 +1,6 @@
 import swaggerUiExpress from "swagger-ui-express";
 import swaggerJSDoc from "swagger-jsdoc";
-import { __dirname } from "./path.utils";
+import { __dirname } from "./path.utils.js";
 
 const swaggerOptions = {
   definition: {

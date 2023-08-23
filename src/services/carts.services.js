@@ -3,7 +3,9 @@ import productsDao from "../DAO/products.dao.js";
 import HTTPError from "../DAO/repository/errors.repository.js";
 import TicketDao from "../DAO/tickets.dao.js";
 import logger from "../utils/logger.utils.js";
-import uuid from "uuid";
+import { v4 as uuidv4 } from "uuid";
+
+const newUUID = uuidv4();
 
 export const createCart = async (req, res, next) => {
   try {

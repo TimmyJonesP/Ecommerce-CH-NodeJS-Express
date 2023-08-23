@@ -22,6 +22,6 @@ export default class ProductsRepository {
   };
 
   deleteByID = async (id) => {
-    return await Products.deleteOne({ code: { $eq: id } });
+    return await Products.findOne(id);
   };
 }

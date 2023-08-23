@@ -1,4 +1,4 @@
-import Cart from "../schemas/cart.schemas";
+import Cart from "../schemas/cart.schemas.js";
 
 export default class CartRepository {
   getById = async (id) => {
