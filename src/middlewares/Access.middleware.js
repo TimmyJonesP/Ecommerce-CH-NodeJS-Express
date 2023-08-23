@@ -18,7 +18,7 @@ export function publicAccess(req, res, next) {
 }
 
 export function userAccess(req, res, next) {
-  req.user.role === "user" || req.user.role === "admin"
+  req.session.user.role === "user" || req.session.user.role === "admin"
     ? next()
     : next(new HTTPError(403));
 }

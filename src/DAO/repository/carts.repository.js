@@ -2,29 +2,29 @@ import Cart from "../schemas/cart.schemas.js";
 
 export default class CartRepository {
   getById = async (id) => {
-    return await Cart.findOne({ id: { $eq: id } });
+    return await Cart.findOne({ _id: id }).populate("products.product");
   };
 
-  createCart = async (id) => {
-    return await cartModel.create({ id: id, products: [] });
+  createCart = async () => {
+    return await Cart.create({ products: [] });
   };
 
   addOne = async (id, product) => {
-    return await cartModel.updateOne(
-      { id: id },
+    return await Cart.updateOne(
+      { id: cartId },
       { $push: { products: product } }
     );
   };
 
   updateCart = async (id, cart) => {
-    return await cartModel.updateOne({ id: id }, { products: cart });
+    return await Cart.updateOne({ id: id }, { products: cart });
   };
 
   emptyCart = async (id, cart) => {
-    return await cartModel.updateOne({ id: id }, { products: cart });
+    return await Cart.updateOne({ id: id }, { products: cart });
   };
 
   deleteCart = async (id) => {
-    return await cartModel.deleteOne({ id: id });
+    return await Cart.deleteOne({ id: id });
   };
 }

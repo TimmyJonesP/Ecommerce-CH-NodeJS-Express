@@ -162,7 +162,7 @@ export const buyCart = async (req, res, next) => {
     const cid = req.params.cid;
     const cart = await cartDao.getById(cid);
     const userEmail = req.user.email;
-    const code = uuid.v4();
+    const code = newUUID();
 
     const purchaseData = await TicketDao.processDataTicket(
       code,
