@@ -25,3 +25,7 @@ export const failRegister = async (req, res) => {
   logger.error("Failed Register Strategy");
   res.json({ error: "Failed Register" });
 };
+
+export const redirect = async (req, res) => {
+  res.redirect("/api/register");
+};

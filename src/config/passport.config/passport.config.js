@@ -4,7 +4,13 @@ import GithubStrategy from "passport-github2";
 import { hashPassword, isValidPassword } from "../../utils/crypt.utils.js";
 import newUserDTO from "../../DAO/DTO/newUser.dto.js";
 import userDao from "../../DAO/users.dao.js";
-import { githubID, githubSecret, githubURL } from "../main.config.js";
+import {
+  githubID,
+  githubSecret,
+  githubURL,
+  super_pass,
+  super_user,
+} from "../main.config.js";
 
 const LocalStrategy = local.Strategy;
 
@@ -15,15 +21,23 @@ const initializePassport = () => {
       { passReqToCallback: true, usernameField: "email" },
       async (req, username, password, done) => {
         try {
-          const newUser = new newUserDTO(req.body);
+          const { first_name, last_name, email, age, password } = req.body;
           const user = await userDao.findByEmail({ email: username });
+          let role;
 
-          const hashedPassword = hashPassword(newUser.password);
+          if (email === super_user && password === super_pass) {
+            role = "admin";
+          } else {
+            role = "user";
+          }
+
+          const hashedPassword = hashPassword(password);
           const newUserInfo = {
-            first_name: newUser.first_name,
-            last_name: newUser.last_name,
-            email: newUser.email,
-            age: newUser.age,
+            first_name,
+            last_name,
+            email,
+            age,
+            role,
             password: hashedPassword,
           };
 

@@ -5,7 +5,7 @@ import HTTPError from "./errors.repository.js";
 export default class UserRepository {
   async findByEmail(email) {
     try {
-      return await Users.findOne({ email: email });
+      return await Users.findOne({ email: { $eq: email } });
     } catch (error) {
       throw new HTTPError("Error finding user by email", 500);
     }

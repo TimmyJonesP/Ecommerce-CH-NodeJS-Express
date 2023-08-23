@@ -9,7 +9,7 @@ form.addEventListener("submit", (e) => {
 
   data.forEach((value, key) => (obj[key] = value));
 
-  const url = "/aí/login";
+  const url = "/api/login";
   const headers = {
     "Content-Type": "application/json",
   };

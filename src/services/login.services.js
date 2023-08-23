@@ -1,6 +1,7 @@
 import HTTPError from "../DAO/repository/errors.repository.js";
 import PasswordRepository from "../DAO/repository/password.repository.js";
 import userDao from "../DAO/users.dao.js";
+import { isValidPassword } from "../utils/crypt.utils.js";
 import logger from "../utils/logger.utils.js";
 
 export const getLogin = async (req, res, next) => {
@@ -61,21 +62,24 @@ export const resetPassword = async (req, res, next) => {
     logger.error("Error", error);
   }
 };
-export const localLogin = async (req, res) => {
+export const localLogin = async (req, res, next) => {
   try {
-    if (!req.user) {
-      throw new HTTPError("Incorrect user or password", 404);
+    const email = req.body.email;
+    const password = req.body.password;
+    const userData = await userDao.findByEmail(email);
+
+    if (!userData) {
+      return res.status(401).send("User not found");
     }
-
-    req.session.user = req.user;
-
-    const now = new Date();
-    await userDao.findByIdAndUpdate(req.session.user._id, {
-      last_connection: now,
-    });
-    req.session.save();
+    const valid = isValidPassword(userData, password);
+    if (!valid) {
+      return res.status(401).send("no match");
+    }
+    userData.last_connection = Date.now();
+    await userDao.findByIdAndUpdate(userData._id, userData);
+    req.session.user = userData;
     logger.info("Session initialized", req.session.user);
-    res.status(200).json({ status: "success", message: "session established" });
+    res.redirect("/api/products");
   } catch (error) {
     console.log(error);
     logger.error("Error occurred while login", error);

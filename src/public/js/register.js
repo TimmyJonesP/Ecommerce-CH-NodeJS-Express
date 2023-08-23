@@ -8,7 +8,7 @@ form.addEventListener("submit", (e) => {
   const obj = {};
 
   data.forEach((value, key) => (obj[key] = value));
-  const url = "/api/users";
+  const url = "/api/register";
   const headers = {
     "Content-Type": "application/json",
   };
@@ -29,7 +29,7 @@ form.addEventListener("submit", (e) => {
 });
 
 btn.addEventListener("click", () => {
-  const url = "/api/signup/redirect";
+  const url = "/api/register/redirect";
   const method = "GET";
 
   fetch(url, { method })

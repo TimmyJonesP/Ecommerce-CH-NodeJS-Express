@@ -30,11 +30,7 @@ router.post("/forgot-password", sendToken);
 //Reseteo de contraseña
 router.post("/reset-password/:email", resetPassword);
 
-router.post(
-  "/",
-  passport.authenticate("login", { failureRedirect: "login/fail-login" })
-),
-  localLogin;
+router.post("/", localLogin);
 
 router.get("/logout", logOut);
 
