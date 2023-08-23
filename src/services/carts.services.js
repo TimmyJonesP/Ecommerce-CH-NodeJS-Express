@@ -180,6 +180,7 @@ export const buyCart = async (req, res, next) => {
       });
     }
   } catch (error) {
+    console.log(error);
     logger.error(
       "Error processing your buy. Check the data you are sending us",
       error

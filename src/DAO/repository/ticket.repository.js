@@ -19,7 +19,8 @@ class TicketRepository {
           processedProducts,
           unprocessedProducts
         );
-        if (product) {
+
+        if (product && product._id) {
           const productQuantity = item.quantity;
           const productTotalPrice = product.price * productQuantity;
           totalAmount += productTotalPrice;
@@ -30,8 +31,7 @@ class TicketRepository {
       cart.products = cart.products.filter(
         (item) =>
           !processedProducts.some(
-            (processedItem) =>
-              processedItem._id.toString() === item.product._id.toString()
+            (processedItem) => processedItem._id.toString() === item._id
           )
       );
       await cartDao.updateCart(cart);
@@ -51,12 +51,13 @@ class TicketRepository {
         unprocessedProducts: unprocessedProducts,
       };
     } catch (error) {
+      console.log(error);
       logger.error("Error processing purchase", error);
       throw new HTTPError("Error processing your purchase", 500);
     }
   }
   async processItem(item, processedProducts, unprocessedProducts) {
-    const pid = item.product._id;
+    const pid = item._id;
     const productQuantity = item.quantity;
 
     try {
