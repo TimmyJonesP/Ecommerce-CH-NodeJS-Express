@@ -2,7 +2,7 @@ import passport from "passport";
 import local from "passport-local";
 import GithubStrategy from "passport-github2";
 import { hashPassword, isValidPassword } from "../../utils/crypt.utils.js";
-import newUserDTO from "../../DAO/DTO/newUser.dto.js";
+
 import userDao from "../../DAO/users.dao.js";
 import {
   githubID,
@@ -11,6 +11,7 @@ import {
   super_pass,
   super_user,
 } from "../main.config.js";
+import Users from "../../DAO/schemas/users.schemas.js";
 
 const LocalStrategy = local.Strategy;
 
@@ -87,22 +88,21 @@ const initializePassport = () => {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          const user = await userDao.findByEmail({
-            email: profile._json.email,
-          });
+          const githubEmail =
+            profile.emails && profile.emails.length > 0
+              ? profile.emails[0].value
+              : null;
+          const displayName = profile.displayName;
 
-          if (!user) {
-            const newUserInfo = {
-              first_name: profile._json.name,
-              last_name: "",
-              age: 21,
-              email: profile._json.email,
-              password: "",
-            };
-            const newUser = await userDao.create(newUserInfo);
-            return done(null, newUser);
-          }
-          done(null, user);
+          const newUserInfo = {
+            first_name: displayName,
+            last_name: "",
+            age: 21,
+            email: githubEmail,
+            password: "",
+          };
+          const newUser = await userDao.create(newUserInfo);
+          return done(null, newUser);
         } catch (error) {
           return done(error);
         }
@@ -117,10 +117,6 @@ const initializePassport = () => {
   passport.deserializeUser(async (id, done) => {
     try {
       const user = await userDao.findById(id);
-
-      if (!user) {
-        return done(new Error("User not found"), null);
-      }
 
       done(null, user);
     } catch (error) {
