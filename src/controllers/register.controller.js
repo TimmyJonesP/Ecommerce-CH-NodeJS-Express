@@ -20,4 +20,6 @@ router.get("/", getRegister);
 
 router.get("/fail-register", failRegister);
 
+router.get("/redirect");
+
 export default router;

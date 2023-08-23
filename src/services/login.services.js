@@ -79,7 +79,9 @@ export const localLogin = async (req, res, next) => {
     await userDao.findByIdAndUpdate(userData._id, userData);
     req.session.user = userData;
     logger.info("Session initialized", req.session.user);
-    res.redirect("/api/products");
+    res
+      .status(200)
+      .json({ message: "Login successful", redirect: "/api/products" });
   } catch (error) {
     console.log(error);
     logger.error("Error occurred while login", error);
@@ -97,7 +99,7 @@ export const logOut = async (req, res, next) => {
         logger.error("Error at Logout", error);
         return next(error);
       }
-      res.redirect("/api/login");
+      res.redirect("/");
     });
   } catch (error) {
     logger.error("Error at Logout (CATCH)", error);

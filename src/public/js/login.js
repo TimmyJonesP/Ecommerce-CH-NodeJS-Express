@@ -22,9 +22,11 @@ form.addEventListener("submit", (e) => {
     body,
   })
     .then((response) => response.json())
-    .then(() => {
+    .then((data) => {
       console.log(data);
-      window.location.href = "/api/products";
+      if (data.redirect) {
+        window.location.href = data.redirect;
+      }
     })
     .catch((error) => console.log(error));
 });

@@ -1,0 +1,46 @@
+<nav style="display: flex; align-items: center; gap: 1em;">
+  <h1>Welcome, {{user.role}} <a href="/api/users/profile" style="color: #464646 !important; text-decoration: none !important;" title="Ir al perfil">{{user.email}}</a></h1>
+  <button onclick="logout()">Logout</button>
+</nav>
+<section>
+  <header>
+    <h6>Showing {{limit}} of {{totalDocs}} products</h6>
+    <form id="sortForm" method="get">
+      <label>Sort by</label>
+      <select name="sort">
+        <option value="">Select an option</option>
+        <option value="asc">Asc price</option>
+        <option value="desc">Desc Price</option>
+        <option value="cat">By Category</option>
+        <option value="stock">By Stock</option>
+      </select>
+      <label>Show</label>
+      <select name="entries">
+        <option value="">Choose Quantity</option>
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="15">15</option>
+      </select>
+      <button>Filter</button>
+    </form>
+  </header>
+  <ol>
+    {{#each docs}}
+      <li style="display: flex; gap: 0.5em; align-items: center;">
+        <img style="width: 50px;" src="{{this.thumbnail}}"/>
+        <p style="margin: .5em 0;">{{this.code}} - {{this.name}} - {{this.category}} - ${{this.price}} - STOCK: {{this.stock}}</p>
+        <button onclick="addToCart('{{this.code}}')">Add to cart</button>
+      </li>
+    {{/each}}
+  </ol>
+  <div>
+    {{#if hasPrevPage}}
+      <a href="{{prevLink}}">Previous</a>
+    {{/if}}
+    {{#if hasNextPage}}
+      <a href="{{nextLink}}">Next</a>
+    {{/if}}
+  </div>
+</section>
+
+<script src="/js/products.js"></script>

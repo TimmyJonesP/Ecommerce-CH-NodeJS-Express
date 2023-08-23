@@ -6,10 +6,10 @@ import MailerDao from "../DAO/mailer.dao.js";
 
 export const getAllProducts = async (req, res, next) => {
   try {
-    let page = parseInt(req.query.page) || 1;
-    let limit = parseInt(req.query.limit) || 5;
-    let sortObj = {};
-    let sortOption = req.query.sort;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const sortObj = {};
+    const sortOption = req.query.sort;
 
     if (sortOption === "asc" || sortOption === "desc") {
       sortObj.price = sortOption;
@@ -20,7 +20,20 @@ export const getAllProducts = async (req, res, next) => {
     }
 
     const data = await productsDao.getAll(page, limit, sortObj);
-    res.json(data);
+
+    data.user = req.session.user;
+
+    data.prevLink = data.hasPrevPage
+      ? `/api/products?page=${data.prevPage}&limit=${limit}${
+          sortOption ? `&sort=${sortOption}` : ``
+        }`
+      : null;
+    data.nextLink = data.hasNextPage
+      ? `/api/products?page=${data.nextPage}&limit=${limit}${
+          sortOption ? `&sort=${sortOption}` : ``
+        }`
+      : null;
+    res.render("products", data);
   } catch (error) {
     console.log(error);
     next(error);
