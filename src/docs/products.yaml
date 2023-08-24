@@ -1,0 +1,201 @@
+openapi: "3.0.1"
+info:
+  title: API Products
+  version: "1.0"
+paths:
+  /api/products:
+    get:
+      summary: Gets all the products in the DB
+      tags:
+        - Products
+      responses:
+        "200":
+          description: Renders product and brings data.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+        "500":
+          description: Error at get products
+    post:
+      summary: Adds a new product to the mongo Data base
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          aplication/json:
+            schema:
+              $ref: "#/components/requestBodies/addProduct"
+      responses:
+        "201":
+          description: Product with code "p.code" created successfully
+        "404":
+          description: Can't create product
+  /api/products/mockingProducts:
+    get:
+      summary: Shows 100 fake products
+      tags:
+        - Products
+      responses:
+        "200":
+          description: mocking products generated correctly
+          content:
+            aplication/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+        "500":
+          description: Error occurred while generating Mock products
+  /api/products/${pid}:
+    patch:
+      summary: Modifies a product
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          require: true
+          description: product id
+      requestBody:
+        required: true
+        content:
+          aplication/json:
+            schema:
+              $ref: "#/components/requestBodies/updateProduct"
+      responses:
+        "200":
+          description: Product with id ${pid} has been actualized
+          content:
+            aplication/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "500":
+          description: An error occurred while updating the product.
+    delete:
+      summary: Deletes a product
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          require: true
+          description: product id
+      responses:
+        "200":
+          description: Product wirth code ${pid}, deleted successfully
+          content:
+            aplication/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+        "500":
+          description: Error ocurred deleting the product, error
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Mongo's id
+        name:
+          type: string
+          description: Product's title
+        description:
+          type: string
+          description: Product's description
+        price:
+          type: number
+          description: Product's price
+        thumbnail:
+          type: string
+          description: Product's image
+        code:
+          type: string
+          description: Product's unique code
+        category:
+          type: string
+          description: Product's category
+        status:
+          type: boolean
+          description: Product's existance
+        stock:
+          type: number
+          description: Product's quantity
+  requestBodies:
+    addProduct:
+      description: Produc's info
+      properties:
+        name:
+          type: string
+          description: Product's title
+        description:
+          type: string
+          description: Product's description
+        price:
+          type: number
+          description: Product's price
+        thumbnail:
+          type: string
+          description: Product's image
+        code:
+          type: string
+          description: Product's unique code
+        category:
+          type: string
+          description: Product's category
+        status:
+          type: boolean
+          description: Product's existance
+        stock:
+          type: number
+          description: Product's quantity
+        owner:
+          type: string
+          description: Creator Role (Must be admin)
+      example:
+        name: Gaming monitor
+        description: Monitor for gaming, 144hz, IPS
+        price: 599
+        stock: 10
+        code: GM1
+        category: Electronics
+        status: true
+        owner: admin
+    updateProduct:
+      description: Product's info
+      properties:
+        name:
+          type: string
+          description: Product's title
+        description:
+          type: string
+          description: Product's description
+        price:
+          type: number
+          description: Product's price
+        thumbnail:
+          type: string
+          description: Product's image
+        code:
+          type: string
+          description: Product's unique code
+        category:
+          type: string
+          description: Product's category
+        status:
+          type: boolean
+          description: Product's existance
+        stock:
+          type: number
+          description: Product's quantity
+      example:
+        price: 100
+        stock: 0
+        status: false

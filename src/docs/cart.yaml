@@ -39,7 +39,7 @@ paths:
         "404":
           description: Error showing cart
     delete:
-      summary: Empties the cart
+      summary: Deletes a cart
       tags:
         - Carts
       parameters:

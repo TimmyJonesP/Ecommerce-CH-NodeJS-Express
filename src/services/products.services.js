@@ -33,7 +33,7 @@ export const getAllProducts = async (req, res, next) => {
           sortOption ? `&sort=${sortOption}` : ``
         }`
       : null;
-    res.render("products", data);
+    res.status(200).render("products", data);
   } catch (error) {
     console.log(error);
     next(error);
@@ -78,8 +78,7 @@ export const addProduct = async (req, res, next) => {
       .status(201)
       .send(`Product with code ${product.code} created successfully`);
   } catch (error) {
-    console.log(error);
-    next(error);
+    res.status(404).send(`Can't create product.`, error);
   }
 };
 
@@ -140,7 +139,7 @@ export const deleteProduct = async (req, res, next) => {
 
     if (user.role === "administrador" || user.role === product.owner) {
       await productsDao.deleteByID(pid);
-      res.send(`Product wirth code ${pid}, deleted successfully`);
+      res.send(`Product with code ${pid}, deleted successfully`);
     }
   } catch (error) {
     console.log(error);
@@ -163,6 +162,6 @@ export const createMockingProducts = async (req, res, next) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Error occurred white generating Mock products");
+    res.status(500).send("Error occurred while generating Mock products");
   }
 };
