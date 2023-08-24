@@ -1,6 +1,6 @@
 openapi: "3.0.1"
 info:
-  title: API Products
+  title: API Carts
   version: "1.0"
 paths:
   /api/carts:
@@ -12,9 +12,8 @@ paths:
         "200":
           description: New cart Created
           content:
-            aplication/json:
+            application/json:
               schema:
-                type: object
                 $ref: "#/components/schemas/Cart"
         "500":
           description: Error creating cart
@@ -34,7 +33,6 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 $ref: "#/components/schemas/Cart"
         "404":
           description: Error showing cart
@@ -44,36 +42,35 @@ paths:
         - Carts
       parameters:
         - name: cid
-          require: true
+          required: true
           description: Cart id.
       responses:
         "200":
           description: Products of cart "cid" are now empty
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: "#/components/schemas/Cart"
         "500":
-          description: Error occurred while eliminating the products from the cart`
-  /api/carts/${cid}/products/${pid}:
+          description: Error occurred while eliminating the products from the cart
+  /api/carts/{cid}/products/{pid}:
     post:
       summary: Adds a product to the cart
       tags:
         - Carts
       parameters:
         - name: cid
-          require: true
+          required: true
           description: cart id
         - name: pid
-          require: true
+          required: true
           description: product id
       responses:
         "200":
           description: Product added successfully
           content:
-            aplication/json:
+            application/json:
               schema:
-                type: object
                 $ref: "#/components/schemas/Cart"
         "400":
           description: Error while adding the product
@@ -84,22 +81,22 @@ paths:
         - Carts
       parameters:
         - name: cid
-          require: true
+          required: true
           description: Cart id.
         - name: pid
-          require: true
+          required: true
           description: Product id.
       requestBody:
         required: true
         content:
-          aplication/json:
+          application/json:
             schema:
-              $ref: "#/components/requestBodies/updateQuantity"
+              $ref: "#/components/schemas/updateQuantity"
       responses:
         "200":
           description: Quantity of product with code "pid" updated successfully in cart "cid"
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: "#/components/schemas/Cart"
         "400":
@@ -110,21 +107,21 @@ paths:
         - Carts
       parameters:
         - name: cid
-          require: true
+          required: true
           description: Cart id.
         - name: pid
-          require: true
+          required: true
           description: Product id.
       responses:
         "200":
           description: Product with code "pid" deleted successfully from cart
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: "#/components/schemas/Cart"
         "500":
           description: Error occurred deleting the product
-  /api/carts/${cid}/purchase:
+  /api/carts/{cid}/purchase:
     get:
       summary: Process the products in the cart, and generates the ticket for the end of the process of purchase
       tags:
@@ -140,7 +137,6 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 $ref: "#/components/schemas/Cart"
         "404":
           description: Error processing your buy. Check the data you are sending us
@@ -162,34 +158,3 @@ components:
               quantity:
                 type: number
                 description: Quantity of the product
-  requestBodies:
-    updateProducts:
-      description: Actualization of the array.
-      properties:
-        products:
-          type: array
-          description: Array with new products
-          items:
-            type: object
-            properties:
-              product:
-                type: string
-                description: productId
-              quantity:
-                type: number
-                description: quantity of the product
-      example:
-        products:
-          [
-            { productId: 64401ad41a6077efffc3d26e, quantity: 8 },
-            { productId: 64401b38b1241db962c7717c, quantity: 2 },
-            { productId: 64401c2bb1241db962c7717e, quantity: 68 },
-          ]
-    updateQuantity:
-      description: Update one product
-      properties:
-        quantity:
-          type: number
-          description: product quantity
-      example:
-        quantity: 33

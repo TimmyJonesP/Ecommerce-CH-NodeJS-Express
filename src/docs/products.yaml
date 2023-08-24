@@ -26,7 +26,7 @@ paths:
       requestBody:
         required: true
         content:
-          aplication/json:
+          application/json:
             schema:
               $ref: "#/components/requestBodies/addProduct"
       responses:
@@ -41,16 +41,16 @@ paths:
         - Products
       responses:
         "200":
-          description: mocking products generated correctly
+          description: Mocking products generated correctly
           content:
-            aplication/json:
+            application/json:
               schema:
                 type: array
                 items:
                   $ref: "#/components/schemas/Product"
         "500":
           description: Error occurred while generating Mock products
-  /api/products/${pid}:
+  /api/products/{pid}:
     patch:
       summary: Modifies a product
       tags:
@@ -58,19 +58,19 @@ paths:
       parameters:
         - name: pid
           in: path
-          require: true
+          required: true
           description: product id
       requestBody:
         required: true
         content:
-          aplication/json:
+          application/json:
             schema:
               $ref: "#/components/requestBodies/updateProduct"
       responses:
         "200":
-          description: Product with id ${pid} has been actualized
+          description: Product with id {pid} has been updated
           content:
-            aplication/json:
+            application/json:
               schema:
                 $ref: "#/components/schemas/Product"
         "500":
@@ -82,19 +82,19 @@ paths:
       parameters:
         - name: pid
           in: path
-          require: true
+          required: true
           description: product id
       responses:
         "200":
-          description: Product wirth code ${pid}, deleted successfully
+          description: Product with code {pid} deleted successfully
           content:
-            aplication/json:
+            application/json:
               schema:
                 type: array
                 items:
                   $ref: "#/components/schemas/Product"
         "500":
-          description: Error ocurred deleting the product, error
+          description: Error occurred deleting the product
 
 components:
   schemas:
@@ -124,41 +124,17 @@ components:
           description: Product's category
         status:
           type: boolean
-          description: Product's existance
+          description: Product's existence
         stock:
           type: number
           description: Product's quantity
   requestBodies:
     addProduct:
-      description: Produc's info
-      properties:
-        name:
-          type: string
-          description: Product's title
-        description:
-          type: string
-          description: Product's description
-        price:
-          type: number
-          description: Product's price
-        thumbnail:
-          type: string
-          description: Product's image
-        code:
-          type: string
-          description: Product's unique code
-        category:
-          type: string
-          description: Product's category
-        status:
-          type: boolean
-          description: Product's existance
-        stock:
-          type: number
-          description: Product's quantity
-        owner:
-          type: string
-          description: Creator Role (Must be admin)
+      description: Product's info
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Product"
       example:
         name: Gaming monitor
         description: Monitor for gaming, 144hz, IPS
@@ -167,34 +143,12 @@ components:
         code: GM1
         category: Electronics
         status: true
-        owner: admin
     updateProduct:
       description: Product's info
-      properties:
-        name:
-          type: string
-          description: Product's title
-        description:
-          type: string
-          description: Product's description
-        price:
-          type: number
-          description: Product's price
-        thumbnail:
-          type: string
-          description: Product's image
-        code:
-          type: string
-          description: Product's unique code
-        category:
-          type: string
-          description: Product's category
-        status:
-          type: boolean
-          description: Product's existance
-        stock:
-          type: number
-          description: Product's quantity
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Product"
       example:
         price: 100
         stock: 0
